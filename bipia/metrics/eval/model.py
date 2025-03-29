@@ -8,13 +8,11 @@ import re
 import openai
 
 from accelerate.logging import get_logger
-from openai.error import (
+from openai import (
     RateLimitError,
-    InvalidRequestError,
     Timeout,
     APIConnectionError,
     APIError,
-    ServiceUnavailableError,
 )
 
 from .base import BaseEval
@@ -144,13 +142,6 @@ class ModelEval(BaseEval):
             except APIError as e:
                 logger.debug(e, exc_info=True)
                 time.sleep(1)
-            except ServiceUnavailableError as e:
-                logger.debug(e, exc_info=True)
-                time.sleep(1)
-            except InvalidRequestError as e:
-                logger.warning(e, exc_info=True)
-                success = True
-                response = {"choices": []}
             except Exception as e:
                 logger.warning(e, exc_info=True)
                 success = True
