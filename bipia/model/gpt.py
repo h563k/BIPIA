@@ -96,7 +96,6 @@ class GPTModel(BaseModel):
                 rslts += str(delta)
         except Exception as e:
             logger.warning(e, exc_info=True)
-        print(rslts)
         return [rslts]
 
     def completion(
