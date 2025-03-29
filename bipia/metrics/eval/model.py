@@ -83,13 +83,6 @@ class ModelEval(BaseEval):
             except APIError as e:
                 logger.debug(e, exc_info=True)
                 time.sleep(1)
-            except ServiceUnavailableError as e:
-                logger.debug(e, exc_info=True)
-                time.sleep(1)
-            except InvalidRequestError as e:
-                logger.warning(e, exc_info=True)
-                success = True
-                response = {"choices": []}
             except Exception as e:
                 logger.warning(e, exc_info=True)
                 success = True

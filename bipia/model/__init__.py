@@ -46,6 +46,7 @@ LLM_NAME_TO_CLASS = OrderedDict(
         ("guanaco", Guanaco),
         ("llama2", Llama2),
         ("mistral", Mistral),
+        ("deepseek", GPT35),
     ]
 )
 

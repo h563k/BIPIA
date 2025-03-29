@@ -34,6 +34,18 @@ class GPTModel(BaseModel):
     def __init__(self, *, config: str | dict = None, **kwargs):
         config = self.load_config(config)
         self.config = config
+    
+    def env_init(self):
+        proxy = self.config.get("proxy", None)
+        if proxy:
+            os.environ['http_proxy'] = proxy
+            os.environ['https_proxy'] = proxy
+            os.environ['ftp_proxy'] = proxy
+            os.environ['no_proxy'] = '127.0.0.1,localhost'
+            os.environ['HTTP_PROXY'] = proxy
+            os.environ['HTTPS_PROXY'] = proxy
+            os.environ['FTP_PROXY'] = proxy
+            os.environ['NO_PROXY'] = '127.0.0.1,localhost'
 
     def chat_completion(
         self,
@@ -44,20 +56,20 @@ class GPTModel(BaseModel):
         presence_penalty=0,
     ):
         success = False
+        self.env_init()
         while not success:
             try:
-                response = openai.ChatCompletion.create(
-                    api_key=self.config.get("api_key", None),
-                    api_base=self.config.get("api_base", None),
-                    api_type=self.config.get("api_type", None),
-                    api_version=self.config.get("api_version", None),
-                    engine=self.config.get("engine", None),
+                api_key = self.config.get("api_key", None)
+                base_url = self.config.get("api_base", None)
+                client = openai.OpenAI(api_key=api_key, base_url=base_url)
+                response = client.chat.completions.create(
                     model=self.config.get("model", None),
                     messages=messages,
                     temperature=temperature,
                     max_tokens=max_tokens,
                     frequency_penalty=frequency_penalty,
                     presence_penalty=presence_penalty,
+                    stream=True,
                 )
                 success = True
             except RateLimitError as e:
@@ -77,13 +89,15 @@ class GPTModel(BaseModel):
                 logger.warning(e, exc_info=True)
                 success = True
                 response = {"choices": []}
+        rslts = ""
         try:
-            rslts = [i["message"]["content"] for i in response["choices"]]
+            for chunk in response:
+                delta = chunk.choices[0].delta.content
+                rslts += str(delta)
         except Exception as e:
             logger.warning(e, exc_info=True)
-            rslts = []
-
-        return rslts
+        print(rslts)
+        return [rslts]
 
     def completion(
         self,
@@ -95,16 +109,15 @@ class GPTModel(BaseModel):
         stop=["<|im_end|>"],
     ):
         success = False
+        self.env_init()
         while not success:
             try:
-                response = openai.Completion.create(
-                    api_key=self.config.get("api_key", None),
-                    api_base=self.config.get("api_base", None),
-                    api_type=self.config.get("api_type", None),
-                    api_version=self.config.get("api_version", None),
-                    engine=self.config.get("engine", None),
+                api_key = self.config.get("api_key", None)
+                base_url = self.config.get("api_base", None)
+                client = openai.OpenAI(api_key=api_key, base_url=base_url)
+                response = client.completions.create(
                     model=self.config.get("model", None),
-                    prompt=messages,
+                    messages=messages,
                     temperature=temperature,
                     max_tokens=max_tokens,
                     frequency_penalty=frequency_penalty,
@@ -125,13 +138,6 @@ class GPTModel(BaseModel):
             except APIError as e:
                 logger.debug(e, exc_info=True)
                 time.sleep(1)
-            except ServiceUnavailableError as e:
-                logger.debug(e, exc_info=True)
-                time.sleep(1)
-            except InvalidRequestError as e:
-                logger.warning(e, exc_info=True)
-                success = True
-                response = {"choices": []}
             except Exception as e:
                 logger.warning(e, exc_info=True)
                 success = True
@@ -174,7 +180,8 @@ class GPTModelWSystem(GPTModel):
             ]
             example["message"] = message
         else:
-            system_message = "<|im_start|>system\n{}\n<|im_end|>".format(system_prompt)
+            system_message = "<|im_start|>system\n{}\n<|im_end|>".format(
+                system_prompt)
             user_message = "\n<|im_start|>{}\n{}\n<|im_end|>".format(
                 "user", user_prompt
             )
@@ -215,7 +222,8 @@ class GPTModelWOSystem(GPTModel):
             ]
             example["message"] = message
         else:
-            system_message = "<|im_start|>system\n{}\n<|im_end|>".format(system_prompt)
+            system_message = "<|im_start|>system\n{}\n<|im_end|>".format(
+                system_prompt)
             user_message = "\n<|im_start|>{}\n{}\n<|im_end|>".format(
                 "user", user_prompt
             )
