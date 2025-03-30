@@ -1,31 +1,32 @@
 # Copyright (c) Microsoft Corporation.
 # Licensed under the MIT License.
-
-from functools import partial
-import jsonlines
-import logging
-import json
-import numpy as np
-from tqdm import tqdm
-from pathlib import Path
-import copy
-from collections import Counter
-
-import torch
-from torch.utils.data import DataLoader
-
-import datasets
-from datasets import Dataset
-
-from accelerate import Accelerator
-from accelerate.logging import get_logger
-from accelerate.utils import set_seed
-
-from bipia.model import AutoLLM
-from bipia.data import AutoPIABuilder, DefaultDataCollator, DataCollatorWithPadding
-from bipia.metrics import BipiaEvalFactory
+import os
+import sys
+file_path = os.path.dirname(__file__)
+home_path = os.path.dirname(file_path)
+sys.path.append(home_path)
 
 from parameters import parse_args
+from bipia.metrics import BipiaEvalFactory
+from bipia.data import AutoPIABuilder, DefaultDataCollator, DataCollatorWithPadding
+from bipia.model import AutoLLM
+from accelerate.utils import set_seed
+from accelerate.logging import get_logger
+from accelerate import Accelerator
+from datasets import Dataset
+import datasets
+from torch.utils.data import DataLoader
+import torch
+from collections import Counter
+import copy
+from pathlib import Path
+from tqdm import tqdm
+import numpy as np
+import json
+import logging
+import jsonlines
+from functools import partial
+
 
 logger = get_logger(__name__)
 
@@ -131,6 +132,8 @@ def inference(args):
         return example
 
     with accelerator.main_process_first():
+        # 截取部分, 量太大,而且主要是排列组合, 信息量并不大, 只需要截取部分数据即可
+        pia_dataset = pia_dataset.shuffle(seed=42).select(range(min(5000, len(pia_dataset))))
         processed_datasets = pia_dataset.map(
             rename_target,
             desc="Processing Indirect PIA datasets (Rename target).",
@@ -176,7 +179,8 @@ def inference(args):
                         if isinstance(obj["message"], str):
                             msg = obj["message"]
                         else:
-                            msg = " ".join([j["content"] for j in obj["message"]])
+                            msg = " ".join([j["content"]
+                                           for j in obj["message"]])
 
                         if msg in needed_messages and msg not in exist_messages:
                             if needed_messages[msg] == 1:
@@ -294,9 +298,11 @@ def evaluate(args):
     response_path = Path(args.response_path)
 
     if not response_path.exists():
-        raise ValueError(f"response_path: {args.response_path} does not exists.")
+        raise ValueError(
+            f"response_path: {args.response_path} does not exists.")
 
-    ds = datasets.load_dataset("json", data_files=args.response_path, split="train")
+    ds = datasets.load_dataset(
+        "json", data_files=args.response_path, split="train")
 
     if args.output_path:
         output_path = Path(args.output_path)
@@ -306,7 +312,8 @@ def evaluate(args):
                 needed_messages = Counter(ds["message"])
             else:
                 needed_messages = Counter(
-                    [" ".join([j["content"] for j in i]) for i in ds["message"]]
+                    [" ".join([j["content"] for j in i])
+                     for i in ds["message"]]
                 )
 
             # read existing results and filter them from datasets
@@ -320,7 +327,8 @@ def evaluate(args):
                         if isinstance(obj["message"], str):
                             msg = obj["message"]
                         else:
-                            msg = " ".join([j["content"] for j in obj["message"]])
+                            msg = " ".join([j["content"]
+                                           for j in obj["message"]])
 
                         if msg in needed_messages and msg not in exist_messages:
                             if needed_messages[msg] == 1:
@@ -343,7 +351,8 @@ def evaluate(args):
                     )
 
             with accelerator.main_process_first():
-                ds = ds.filter(filter_fn, desc="Filter pre-requested messages.")
+                ds = ds.filter(
+                    filter_fn, desc="Filter pre-requested messages.")
 
             if len(ds) == 0:
                 logger.info("Already Finished. No need to resume.")
@@ -358,7 +367,8 @@ def evaluate(args):
         else:
             output_path.parent.mkdir(exist_ok=True, parents=True)
     else:
-        raise ValueError(f"output_path: Invalid empty output_path: {args.output_path}.")
+        raise ValueError(
+            f"output_path: Invalid empty output_path: {args.output_path}.")
 
     processed_datasets = ds.sort("attack_name")
 
@@ -439,9 +449,11 @@ def capability_eval(args):
     response_path = Path(args.response_path)
 
     if not response_path.exists():
-        raise ValueError(f"response_path: {args.response_path} does not exists.")
+        raise ValueError(
+            f"response_path: {args.response_path} does not exists.")
 
-    ds = datasets.load_dataset("json", data_files=args.response_path, split="train")
+    ds = datasets.load_dataset(
+        "json", data_files=args.response_path, split="train")
 
     from rouge import RougeRecall
 

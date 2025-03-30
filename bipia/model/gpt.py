@@ -14,6 +14,12 @@ from openai import (
     APIError
 )
 
+from tenacity import (
+    retry,
+    stop_after_attempt,
+    wait_random_exponential,
+)  # for exponential backoff
+
 from accelerate.logging import get_logger
 
 from .base import BaseModel
@@ -34,7 +40,7 @@ class GPTModel(BaseModel):
     def __init__(self, *, config: str | dict = None, **kwargs):
         config = self.load_config(config)
         self.config = config
-    
+
     def env_init(self):
         proxy = self.config.get("proxy", None)
         if proxy:
@@ -47,6 +53,7 @@ class GPTModel(BaseModel):
             os.environ['FTP_PROXY'] = proxy
             os.environ['NO_PROXY'] = '127.0.0.1,localhost'
 
+    @retry(wait=wait_random_exponential(min=1, max=60), stop=stop_after_attempt(0))
     def chat_completion(
         self,
         messages,
@@ -98,6 +105,7 @@ class GPTModel(BaseModel):
             logger.warning(e, exc_info=True)
         return [rslts]
 
+    @retry(wait=wait_random_exponential(min=1, max=60), stop=stop_after_attempt(0))
     def completion(
         self,
         messages,

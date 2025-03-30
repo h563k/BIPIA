@@ -14,7 +14,7 @@ if enter.lower() == "y":
 else:
     raise ValueError("Please read the guildlines and run the script again.")
 
-with open("./index.json", "r") as f:
+with open("/opt/project/BIPIA/benchmark/abstract/index.json", "r") as f:
     indexes = json.load(f)
 
 train_ds = ds["train"].select(indexes["train"])
