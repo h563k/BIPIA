@@ -6,7 +6,6 @@ home_path = os.path.dirname(file_path)
 task_list = [
     "email",
     "code",
-    # "qa",
     "abstract",
     "table",
 ]
