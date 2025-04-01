@@ -1,8 +1,8 @@
 import os
+import yaml
 import multiprocessing
 
-file_path = os.path.dirname(__file__)
-home_path = os.path.dirname(file_path)
+
 task_list = [
     "email",
     "code",
@@ -11,19 +11,21 @@ task_list = [
 ]
 
 
-attack_data_file_dictt = {
-    "email": f"{home_path}/benchmark/text_attack_test.jsonl",
-}
-
 """
 默认评价模型放于/gpt35.yaml里面
 qa任务无法获取数据暂时不做
 """
 
 
-def evaluate(task, modelname):
+def evaluate(task):
     seed = 2023
+    file_path = os.path.dirname(__file__)
+    home_path = os.path.dirname(file_path)
     gpt_config_file = f"{home_path}/config/gpt4.yaml"
+    with open(f"{home_path}/config/gpt35.yaml", "r") as f:
+        config = yaml.load(f, Loader=yaml.FullLoader)
+        modelname = config["model"]
+        print(f"start eval {task} with {modelname}")
     output_path = f"{home_path}/output/eval/{modelname}_{task}.jsonl"
     response_path = f"{home_path}/output/generate/{modelname}_{task}.jsonl"
     respones = f"""python run.py --mode evaluate --seed {seed} \
@@ -35,22 +37,13 @@ def evaluate(task, modelname):
     os.system(respones)
 
 
-def process_task(task_modelname):
-    task, modelname = task_modelname
-    # 在进程内部初始化 SingleProcess
-    evaluate(task, modelname)
-
-
-def multi_process_template_model(task_modelname_list, num_processes=None):
+def multi_process_template_model(task_list, num_processes=None):
     if num_processes is None:
         num_processes = multiprocessing.cpu_count()
 
     with multiprocessing.Pool(processes=num_processes) as pool:
-        pool.map(process_task, task_modelname_list)
+        pool.map(evaluate, task_list)
 
 
 if __name__ == "__main__":
-    task_modelname_list = [
-        (task, "gpt-3.5-turbo") for task in task_list
-    ]
-    multi_process_template_model(task_modelname_list)
+    multi_process_template_model(task_list)
