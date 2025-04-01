@@ -21,7 +21,7 @@ qa任务无法获取数据暂时不做
 """
 
 
-def generate(task, modelname):
+def evaluate(task, modelname):
     seed = 2023
     gpt_config_file = f"{home_path}/config/gpt4.yaml"
     output_path = f"{home_path}/output/eval/{modelname}_{task}.jsonl"
@@ -38,7 +38,7 @@ def generate(task, modelname):
 def process_task(task_modelname):
     task, modelname = task_modelname
     # 在进程内部初始化 SingleProcess
-    generate(task, modelname)
+    evaluate(task, modelname)
 
 
 def multi_process_template_model(task_modelname_list, num_processes=None):

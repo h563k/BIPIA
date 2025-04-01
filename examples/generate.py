@@ -23,7 +23,7 @@ def generate(task, modelname):
         attack_data_file = f"{home_path}/benchmark/code_attack_test.json"
     else:
         attack_data_file = f"{home_path}/benchmark/text_attack_test.json"
-    llm_config_file = f"{home_path}/config/gpt4.yaml"
+    llm_config_file = f"{home_path}/config/gpt35.yaml"
     output_path = f"{home_path}/output/generate/{modelname}_{task}.jsonl"
     respones = f"""python run.py --seed {seed} --dataset_name {task} \
         --context_data_file {context_data_file} \
