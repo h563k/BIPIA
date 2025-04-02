@@ -5,7 +5,7 @@ import multiprocessing
 
 
 """
-    这里默认将生成模型放于config/gpt4.yaml里面
+    这里默认将生成模型放于config/gpt35.yaml里面
     qa任务无法获取数据暂时不做
 """
 def generate(task):

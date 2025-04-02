@@ -27,4 +27,4 @@ def result_count(model_name):
     for key, valuse in all_data.items():
         print(key, np.mean(valuse))
 if __name__ == "__main__":
-    result_count('gpt-3.5-turbo')
+    result_count('gpt-4o-mini')
