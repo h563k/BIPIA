@@ -115,7 +115,7 @@ class ModelEval(BaseEval):
                 rslts += str(delta)
         except Exception as e:
             logger.warning(e, exc_info=True)
-        return [rslts]
+        return [rslts.strip('None')]
 
     @retry(wait=wait_random_exponential(min=1, max=60), stop=stop_after_attempt(0))
     def completion(

@@ -1,9 +1,10 @@
 import os
 import jsonlines
 import numpy as np
-
+import pandas as pd
 
 def result_count(model_name):
+    temp = pd.DataFrame()
     file_path = os.path.dirname(__file__)
     home_path = os.path.dirname(file_path)
     file_list = os.listdir(os.path.join(home_path, "output/eval"))
@@ -25,6 +26,25 @@ def result_count(model_name):
             all_data[file_type].extend(file_data)
     print(f"{model_name}的评估结果为:")
     for key, valuse in all_data.items():
-        print(key, np.mean(valuse))
+        temp = pd.concat([temp, pd.DataFrame([key, np.mean(valuse)])], axis=1)
+    temp = temp.T
+    temp.set_index([0], inplace=True)
+    return temp
 if __name__ == "__main__":
-    result_count('gpt-4o-mini')
+    model_list = [
+        "gpt-4o-mini",
+        'gpt-3.5-turbo',
+        'qwq-plus',
+        'qwen2.5-72b-instruct',
+        'GLM-4-Air',
+        'deepseek-chat',
+        'deepseek-r1',
+    ]
+    result = pd.DataFrame()
+    for model_name in model_list:
+        temp = result_count(model_name)
+        result = pd.concat([result, temp], axis=1)
+    result.columns = model_list
+    # result.dropna(axis=1, inplace=True)
+    print(result)
+    result.to_csv("../test/result.csv")

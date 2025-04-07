@@ -12,3 +12,4 @@ config/my_gpt35.yaml
 test
 output/
 *.tgz
+*.7z

@@ -25,7 +25,7 @@ def evaluate(task):
     with open(f"{home_path}/config/gpt35.yaml", "r") as f:
         config = yaml.load(f, Loader=yaml.FullLoader)
         modelname = config["model"]
-        print(f"start eval {task} with {modelname}")
+    print(f"start eval {task} with {modelname}")
     output_path = f"{home_path}/output/eval/{modelname}_{task}.jsonl"
     response_path = f"{home_path}/output/generate/{modelname}_{task}.jsonl"
     respones = f"""python run.py --mode evaluate --seed {seed} \
