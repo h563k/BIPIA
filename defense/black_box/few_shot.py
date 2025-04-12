@@ -309,6 +309,8 @@ def inference():
         enable_stealth=args.enable_stealth,
     )
     train_pia_dataset = Dataset.from_pandas(train_pia_samples)
+    train_pia_dataset = train_pia_dataset.shuffle(seed=42).select(range(min(1000, len(train_pia_dataset))))
+
 
     if args.use_clean:
         test_pia_samples = pia_builder(
@@ -322,6 +324,7 @@ def inference():
         )
 
     test_pia_dataset = Dataset.from_pandas(test_pia_samples)
+    test_pia_dataset = test_pia_dataset.shuffle(seed=42).select(range(min(1000, len(test_pia_dataset))))
     pia_dataset = DatasetDict({"train": train_pia_dataset, "test": test_pia_dataset})
 
     llm = FewShotChatGPT35Defense(

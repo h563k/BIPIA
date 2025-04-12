@@ -133,7 +133,7 @@ def inference(args):
 
     with accelerator.main_process_first():
         # 截取部分, 量太大,而且主要是排列组合, 信息量并不大, 只需要截取部分数据即可
-        pia_dataset = pia_dataset.shuffle(seed=42).select(range(min(5000, len(pia_dataset))))
+        pia_dataset = pia_dataset.shuffle(seed=42).select(range(min(1000, len(pia_dataset))))
         processed_datasets = pia_dataset.map(
             rename_target,
             desc="Processing Indirect PIA datasets (Rename target).",

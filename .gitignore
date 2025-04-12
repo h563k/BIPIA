@@ -13,3 +13,4 @@ test
 output/
 *.tgz
 *.7z
+defense/black_box/bipia
