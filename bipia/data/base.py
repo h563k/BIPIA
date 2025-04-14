@@ -18,8 +18,11 @@ class BasePIABuilder:
     system_prompt_template: str
     user_prompt_template: str
 
-    def __init__(self, seed: int = None):
+    def __init__(self, seed: int = None, prompt_type=None):
         self.seed = seed
+        self.prompt_type = prompt_type
+        print(f"{self.name} is loaded")
+        print(f"Prompt type is {self.prompt_type}")
 
     def __call__(
         self,

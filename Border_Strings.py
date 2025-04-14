@@ -27,7 +27,7 @@ def generate(task, border_type):
     else:
         test_attack_data_file = f"{home_path}/benchmark/text_attack_test.json"
         train_attack_data_file = f"{home_path}/benchmark/text_attack_train.json"
-    output_path = f"{home_path}/output/generate_border_type/{modelname}_{task}.jsonl"
+    output_path = f"{home_path}/output/generate_border_type/{modelname}_{task}_{border_type}.jsonl"
     respones = f"""python defense/black_box/few_shot.py --bipia_seed {seed} --fewshot_seed {seed} --dataset_name {task} \
 --train_context_data_file {train_context_data_file} \
 --train_attack_data_file {train_attack_data_file} \

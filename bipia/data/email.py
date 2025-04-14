@@ -3,6 +3,7 @@
 
 from typing import Any, Tuple
 from .base import QAPIABuilder
+from .prompt_template import prompt_types
 
 
 class EmailIPIABuilder(QAPIABuilder):
@@ -26,6 +27,9 @@ class EmailIPIABuilder(QAPIABuilder):
 
     def construct_prompt(self, example: Any, require_system_prompt: bool = True, ign_guidance: str = "") -> Any:
         if require_system_prompt:
+            if self.prompt_type:
+                self.system_prompt_template = prompt_types(
+                    self.name, self.prompt_type)
             system_prompt = self.system_prompt_template.format(
                 context=example["context"], guidance=ign_guidance
             )

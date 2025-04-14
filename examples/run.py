@@ -112,15 +112,17 @@ def inference(args):
     # If passed along, set the training seed now.
     if args.seed is not None:
         set_seed(args.seed)
-
-    pia_builder = AutoPIABuilder.from_name(args.dataset_name)(args.seed)
+    if args.prompt_type:
+        pia_builder = AutoPIABuilder.from_name(args.dataset_name)(args.seed, args.prompt_type)
+    else:
+        pia_builder = AutoPIABuilder.from_name(args.dataset_name)(args.seed)
     pia_samples = pia_builder(
         args.context_data_file,
         args.attack_data_file,
         enable_stealth=args.enable_stealth,
     )
     pia_dataset = Dataset.from_pandas(pia_samples)
-
+    
     llm = AutoLLM.from_name(args.llm_config_file)(
         config=args.llm_config_file,
         accelerator=accelerator,
@@ -156,6 +158,7 @@ def inference(args):
             # remove_columns=DATA_INFO[args.dataset_name],
             desc="Processing Indirect PIA datasets.",
         )
+        print(processed_datasets[0]["message"])
 
     if args.output_path:
         output_path = Path(args.output_path)

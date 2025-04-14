@@ -25,6 +25,7 @@ def parse_args():
     parser.add_argument("--context_data_file", type=str)
     parser.add_argument("--attack_data_file", type=str)
     parser.add_argument("--llm_config_file", type=str, default=None)
+    parser.add_argument("--prompt_type", type=str, default=None)
     parser.add_argument(
         "--gpt_config_file",
         type=str,

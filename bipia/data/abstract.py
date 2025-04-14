@@ -8,6 +8,7 @@ import pandas as pd
 
 from .base import BasePIABuilder
 from .utils import insert_end, insert_start, insert_middle
+from .prompt_template import prompt_types
 
 
 class AbstractIPIADataset(BasePIABuilder):
@@ -60,11 +61,16 @@ class AbstractIPIADataset(BasePIABuilder):
         self, example: Any, require_system_prompt: bool = True, ign_guidance: str = ""
     ) -> Tuple[str, str]:
         if require_system_prompt:
-            system_prompt = self.system_prompt_template.format(context=example["context"], guidance=ign_guidance)
+            if self.prompt_type:
+                self.system_prompt_template = prompt_types(
+                    self.name, self.prompt_type)
+            system_prompt = self.system_prompt_template.format(
+                context=example["context"], guidance=ign_guidance)
             user_prompt = self.user_prompt_template[0]
             return system_prompt, user_prompt
         else:
-            user_prompt = self.user_prompt_template[1].format(context=example["context"], guidance=ign_guidance)
+            user_prompt = self.user_prompt_template[1].format(
+                context=example["context"], guidance=ign_guidance)
             return user_prompt
 
     def construct_response(self, example: Any) -> str:
