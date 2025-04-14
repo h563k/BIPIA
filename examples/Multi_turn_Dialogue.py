@@ -50,15 +50,15 @@ def multi_process_template_model(task_list, num_processes=None):
 if __name__ == "__main__":
     task_list = [
         "email",
-        # "code",
-        # "abstract",
-        # "table",
+        "code",
+        "abstract",
+        "table",
     ]
     prompt_type_list = [
         "emotion",
-        # "self-ask",
-        # "ICL",
-        # "calibration",
+        "self-ask",
+        "ICL",
+        "calibration",
     ]
     task_list = [
         (task, prompt_type)

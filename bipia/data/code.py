@@ -69,6 +69,9 @@ class CodeIPIABuilder(BasePIABuilder):
             if self.prompt_type:
                 self.system_prompt_template = prompt_types(
                     self.name, self.prompt_type)
+            print(
+                f"Using system prompt template: {self.system_prompt_template}"
+            )
             system_prompt = self.system_prompt_template.format(
                 context=example["context"], guidance=ign_guidance
             )

@@ -158,7 +158,6 @@ def inference(args):
             # remove_columns=DATA_INFO[args.dataset_name],
             desc="Processing Indirect PIA datasets.",
         )
-        print(processed_datasets[0]["message"])
 
     if args.output_path:
         output_path = Path(args.output_path)
