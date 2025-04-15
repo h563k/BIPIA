@@ -9,7 +9,7 @@ import multiprocessing
 """
 
 
-def generate(task):
+def generate(task, prompt_type):
     seed = 2023
     file_path = os.path.dirname(__file__)
     home_path = os.path.dirname(file_path)
@@ -23,20 +23,20 @@ def generate(task):
         attack_data_file = f"{home_path}/benchmark/code_attack_test.json"
     else:
         attack_data_file = f"{home_path}/benchmark/text_attack_test.json"
-    output_path = f"{home_path}/output/generate/MultiTturnDialogue/{modelname}_{task}.jsonl"
-    respones = f"""python run.py --seed {seed} --mode inference \
-                --context_data_file {context_data_file} \
-                --dataset_name {task} \
-                --attack_data_file {attack_data_file} \
-                --llm_config_file {llm_config_file} \
-                --output_path {output_path}  --batch_size 20 \
-                --add_ign_guidance --log_steps 10 --resume """
+    output_path = f"{home_path}/output/generate/{prompt_type}/{modelname}_{task}.jsonl"
+    respones = f"""python run.py --seed {seed} --dataset_name {task} \
+        --context_data_file {context_data_file} \
+        --attack_data_file {attack_data_file} \
+        --llm_config_file {llm_config_file} \
+        --batch_size 20 --output_path {output_path} \
+        --log_steps 10 --prompt_type {prompt_type} --resume"""
     os.system(respones)
 
 
 def process_task(task_list):
+    task, prompt_type = task_list
     # 在进程内部初始化 SingleProcess
-    generate(task_list)
+    generate(task, prompt_type)
 
 
 def multi_process_template_model(task_list, num_processes=None):
@@ -53,5 +53,16 @@ if __name__ == "__main__":
         "code",
         "abstract",
         "table",
+    ]
+    prompt_type_list = [
+        "emotion",
+        "self-ask",
+        "ICL",
+        "calibration",
+    ]
+    task_list = [
+        (task, prompt_type)
+        for task in task_list
+        for prompt_type in prompt_type_list
     ]
     multi_process_template_model(task_list)
