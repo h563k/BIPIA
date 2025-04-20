@@ -19,3 +19,4 @@ openai
 pandas
 emoji
 tenacity
+openpyxl
