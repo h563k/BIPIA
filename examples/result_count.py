@@ -47,21 +47,4 @@ def result_count():
 
 if __name__ == "__main__":
     result_count()
-    # result_count()
-    # model_list = [
-    #     "gpt-4o-mini",
-    #     'gpt-3.5-turbo',
-    #     'qwq-plus',
-    #     'qwen2.5-72b-instruct',
-    #     'GLM-4-Air',
-    #     'deepseek-chat',
-    #     'deepseek-r1',
-    # ]
-    # result = pd.DataFrame()
-    # for model_name in model_list:
-    #     temp = result_count(model_name)
-    #     result = pd.concat([result, temp], axis=1)
-    # result.columns = model_list
-    # # result.dropna(axis=1, inplace=True)
-    # print(result)
-    # result.to_csv("../test/result.csv")
+
