@@ -274,7 +274,7 @@ def inference(args):
         return example
 
     with accelerator.main_process_first():
-        pia_dataset = pia_dataset.shuffle(seed=42).select(range(min(500, len(pia_dataset))))
+        pia_dataset = pia_dataset.shuffle(seed=42).select(range(min(200, len(pia_dataset))))
         processed_datasets = pia_dataset.map(
             rename_target,
             desc="Processing Indirect PIA datasets (Rename target).",

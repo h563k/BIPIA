@@ -15,7 +15,6 @@ from .utils import DefaultDataCollator, DataCollatorWithPadding
 BUILDER_TO_CLASS = OrderedDict(
     [
         ("code", CodeIPIABuilder),
-        ("qa", QAIPIADataset),
         ("table", TableIPIABuilder),
         ("email", EmailIPIABuilder),
         ("abstract", AbstractIPIADataset),
