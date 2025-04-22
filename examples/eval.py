@@ -21,13 +21,13 @@ def evaluate(task, modelname, response_path, output_path):
     file_path = os.path.dirname(__file__)
     home_path = os.path.dirname(file_path)
     gpt_config_file = f"{home_path}/config/gpt4.yaml"
-    print(f"start eval {task} with {modelname}")
+    print(f"start eval {response_path}")
     respones = f"""python run.py --mode evaluate --seed {seed} \
                 --dataset_name {task} \
                 --response_path {response_path} \
                 --output_path {output_path} \
                 --gpt_config_file {gpt_config_file} \
-                --batch_size 20 --log_steps 1 --resume"""
+                --batch_size 20 --log_steps 10 --resume"""
     os.system(respones)
 
 
@@ -58,20 +58,18 @@ def get_task_list():
             response_path = os.path.join(output_generate_path, types, model)
             output_path = os.path.join(
                 home_path, "output", "eval", types, model)
-            if os.path.exists(output_path):
+            if os.path.exists(output_path) and "rougl" not in output_path:
                 with open(output_path, 'r') as f:
                     lines = f.readlines()
-                    if len(lines) >= 1000:
+                    if len(lines) >= 999:
                         print(f"{output_path} has been evaluated")
                     else:
                         print(f"start eval {output_path} len: {len(lines)}")
                         task_list.append((task, modelname, response_path, output_path))
-            if len(task_list) > 8:
-                break
     return task_list
 
 
 if __name__ == "__main__":
-    for _ in range(10):
-        task_list = get_task_list()
-        multi_process_template_model(task_list, 48)
+    task_list = get_task_list()
+    multi_process_template_model(task_list, 48)
+

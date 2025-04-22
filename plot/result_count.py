@@ -53,8 +53,8 @@ def result_count():
         output_path = output_path.split("/")[-1].replace(".jsonl", "")
     temp.columns = ["modelname", "task", "types", "detail", "asr_rate"]
     rougl_temp.columns = ["modelname", "task", "detail", "rouge1_recall"]
-    temp.to_excel("../test/result.xlsx", index=False)
-    rougl_temp.to_excel("../test/rougl_result.xlsx", index=False)
+    temp.to_excel("../plot/result.xlsx", index=False)
+    rougl_temp.to_excel("../plot/rougl_result.xlsx", index=False)
 
 
 if __name__ == "__main__":

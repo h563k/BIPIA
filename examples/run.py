@@ -265,6 +265,7 @@ def inference(args):
                     )
 
                 if args.log_steps:
+                    print(f"len out: {len(out)}")
                     if step % args.log_steps == 0:
                         with jsonlines.open(args.output_path, "w") as writer:
                             writer.write_all(out)
@@ -351,11 +352,11 @@ def evaluate(args):
                         " ".join([j["content"] for j in example["message"]])
                         not in exist_messages
                     )
-
+            print(f"目前ds长度为{len(ds)}")
             with accelerator.main_process_first():
                 ds = ds.filter(
                     filter_fn, desc="Filter pre-requested messages.")
-
+            print(f"筛选后ds长度为{len(ds)}")
             if len(ds) == 0:
                 logger.info("Already Finished. No need to resume.")
 

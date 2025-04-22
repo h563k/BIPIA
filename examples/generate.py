@@ -28,7 +28,7 @@ def generate(task):
         --attack_data_file {attack_data_file} \
         --llm_config_file {llm_config_file} \
         --batch_size 20 --output_path {output_path} \
-        --log_steps 1 --resume"""
+        --log_steps 10 --resume"""
     os.system(respones)
 
 

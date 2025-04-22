@@ -19,7 +19,7 @@ def eval(task, modelname):
             --dataset_name {task} \
             --response_path {response_path} \
             --output_path {output_path} \
-            --batch_size 20 --log_steps 1 --resume
+            --batch_size 20 --log_steps 10 --resume
         """
     os.system(respones)
 
@@ -49,7 +49,9 @@ if __name__ == "__main__":
         "deepseek-r1",
         "deepseek-v3",
         "GLM-4-Air",
-        "gpt-4o-mini"
+        "gpt-4o-mini",
+        "qwen2.5-72b-instruct",
+        "gpt-3.5-turbo"
     ]
     task_list = [(task, modelname)
                  for task in task_list for modelname in modelname_list]

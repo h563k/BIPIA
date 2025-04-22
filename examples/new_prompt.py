@@ -23,13 +23,16 @@ def generate(task, prompt_type):
         attack_data_file = f"{home_path}/benchmark/code_attack_test.json"
     else:
         attack_data_file = f"{home_path}/benchmark/text_attack_test.json"
-    output_path = f"{home_path}/output/generate/{prompt_type}/{modelname}_{task}.jsonl"
+    if modelname=="deepseek-reasoner":
+        output_path = f"{home_path}/output/generate/{prompt_type}/deepseek-r1_{task}.jsonl"
+    else:
+        output_path = f"{home_path}/output/generate/{prompt_type}/{modelname}_{task}.jsonl"
     respones = f"""python run.py --seed {seed} --dataset_name {task} \
         --context_data_file {context_data_file} \
         --attack_data_file {attack_data_file} \
         --llm_config_file {llm_config_file} \
         --batch_size 20 --output_path {output_path} \
-        --log_steps 1 --prompt_type {prompt_type} --resume"""
+        --log_steps 10 --prompt_type {prompt_type} --resume"""
     os.system(respones)
 
 
@@ -65,4 +68,5 @@ if __name__ == "__main__":
         for task in task_list
         for prompt_type in prompt_type_list
     ]
-    multi_process_template_model(task_list)
+    # multi_process_template_model(task_list)
+    generate("table", "emotion")
