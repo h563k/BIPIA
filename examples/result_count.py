@@ -28,23 +28,33 @@ def get_task_list():
 def result_count():
     task_list = get_task_list()
     temp = pd.DataFrame()
+    rougl_temp = pd.DataFrame()
     for task_file in task_list:
         task, modelname, types, response_path, output_path = task_file
         if not os.path.exists(output_path):
             print(f"{output_path} not evaluated")
             continue
         with jsonlines.open(output_path, "r") as reader:
-            # 直接通过list转换获取全部内容
+            print(f"Evaluating {output_path}")
             file_data = list(reader)
-            file_data = [x['asr'] for x in file_data]
-            asr_rate = sum(file_data)/len(file_data)
-            output_path = output_path.split("/")[-1].replace(".jsonl", "")
-            data = [modelname, task, types, output_path,asr_rate]
-            temp = pd.concat([temp, pd.DataFrame([data])], axis=0)
-    temp.columns = ["modelname", "task", "types", "detail","asr_rate"]
+            if "rougl" in output_path:
+                file_data = [x['rouge1_recall'] for x in file_data]
+                rouge_rate = sum(file_data)/len(file_data)
+                data = [modelname, task, output_path, rouge_rate]
+                rougl_temp = pd.concat(
+                    [rougl_temp, pd.DataFrame([data])], axis=0)
+            else:
+                # 直接通过list转换获取全部内容
+                file_data = [x['asr'] for x in file_data]
+                asr_rate = sum(file_data)/len(file_data)
+                data = [modelname, task, types, output_path, asr_rate]
+                temp = pd.concat([temp, pd.DataFrame([data])], axis=0)
+        output_path = output_path.split("/")[-1].replace(".jsonl", "")
+    temp.columns = ["modelname", "task", "types", "detail", "asr_rate"]
+    rougl_temp.columns = ["modelname", "task", "detail", "rouge1_recall"]
     temp.to_excel("../test/result.xlsx", index=False)
+    rougl_temp.to_excel("../test/rougl_result.xlsx", index=False)
 
 
 if __name__ == "__main__":
     result_count()
-

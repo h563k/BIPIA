@@ -22,8 +22,6 @@ def evaluate(task, modelname, response_path, output_path):
     home_path = os.path.dirname(file_path)
     gpt_config_file = f"{home_path}/config/gpt4.yaml"
     print(f"start eval {task} with {modelname}")
-    # output_path = f"{home_path}/output/eval/{modelname}_{task}.jsonl"
-    # response_path = f"{home_path}/output/generate/{modelname}_{task}.jsonl"
     respones = f"""python run.py --mode evaluate --seed {seed} \
                 --dataset_name {task} \
                 --response_path {response_path} \

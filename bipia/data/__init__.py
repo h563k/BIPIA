@@ -5,7 +5,6 @@ from collections import OrderedDict
 
 from .code import CodeIPIABuilder
 from .email import EmailIPIABuilder
-from .qa import QAIPIADataset
 from .table import TableIPIABuilder
 from .abstract import AbstractIPIADataset
 

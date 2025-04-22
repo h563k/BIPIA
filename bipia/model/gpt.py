@@ -76,11 +76,9 @@ class GPTModel(BaseModel):
                     max_tokens=max_tokens,
                     frequency_penalty=frequency_penalty,
                     presence_penalty=presence_penalty,
-                    stream=True,
                 )
                 success = True
             except RateLimitError as e:
-                # logger.warning(e, exc_info=True)
                 retry_time = get_retry_time(str(e))
                 time.sleep(retry_time)
             except Timeout as e:
@@ -98,9 +96,7 @@ class GPTModel(BaseModel):
                 response = {"choices": []}
         rslts = ""
         try:
-            for chunk in response:
-                delta = chunk.choices[0].delta.content
-                rslts += str(delta)
+            rslts = response.choices[0].message.content
         except Exception as e:
             logger.warning(e, exc_info=True)
         return [rslts.strip('None')]
