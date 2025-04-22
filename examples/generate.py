@@ -22,7 +22,7 @@ def generate(task):
         attack_data_file = f"{home_path}/benchmark/code_attack_test.json"
     else:
         attack_data_file = f"{home_path}/benchmark/text_attack_test.json"
-    output_path = f"{home_path}/output/generate/{modelname}_{task}.jsonl"
+    output_path = f"{home_path}/output/generate/origin/{modelname}_{task}.jsonl"
     respones = f"""python run.py --seed {seed} --dataset_name {task} \
         --context_data_file {context_data_file} \
         --attack_data_file {attack_data_file} \

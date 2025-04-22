@@ -1,18 +1,19 @@
 import os
 import jsonlines
-import numpy as np
 import pandas as pd
+
+
+home_path = os.path.dirname(os.path.dirname(__file__))
 
 
 def get_task_list():
     task_list = []
-    home_path = os.path.dirname(os.path.dirname(__file__))
     output_generate_path = os.path.join(home_path, "output", "generate")
     type_list = os.listdir(output_generate_path)
     for types in type_list:
         model_list = os.listdir(os.path.join(output_generate_path, types))
         for model in model_list:
-            para = model.strip(".jsonl").split("_")
+            para = model.replace(".jsonl", "").split("_")
             modelname = para[0]
             task = para[1]
             response_path = os.path.join(output_generate_path, types, model)
@@ -35,7 +36,7 @@ def result_count():
             print(f"{output_path} not evaluated")
             continue
         with jsonlines.open(output_path, "r") as reader:
-            print(f"Evaluating {output_path}")
+            # print(f"Evaluating {output_path}")
             file_data = list(reader)
             if "rougl" in output_path:
                 file_data = [x['rouge1_recall'] for x in file_data]

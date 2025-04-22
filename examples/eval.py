@@ -61,15 +61,17 @@ def get_task_list():
             if os.path.exists(output_path):
                 with open(output_path, 'r') as f:
                     lines = f.readlines()
-                    if len(lines) == 1000:
-                        print(f"{task} {modelname} has been evaluated")
-            else:
-                print(f"start eval {task} with {modelname}")
-                task_list.append((task, modelname, response_path, output_path))
-    print(len(task_list))
+                    if len(lines) >= 1000:
+                        print(f"{output_path} has been evaluated")
+                    else:
+                        print(f"start eval {output_path} len: {len(lines)}")
+                        task_list.append((task, modelname, response_path, output_path))
+            if len(task_list) > 8:
+                break
     return task_list
 
 
 if __name__ == "__main__":
-    task_list = get_task_list()
-    multi_process_template_model(task_list, 48)
+    for _ in range(10):
+        task_list = get_task_list()
+        multi_process_template_model(task_list, 48)
