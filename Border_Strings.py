@@ -35,7 +35,7 @@ def generate(task, border_type):
 --test_attack_data_file {test_attack_data_file} \
 --llm_config_file {llm_config_file} \
 --batch_size 20 --output_path {output_path} \
---log_steps 10 --resume --border_type {border_type} --num_examples 0"""
+--log_steps 1 --resume --border_type {border_type} --num_examples 0"""
     os.system(respones)
 
 

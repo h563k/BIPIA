@@ -19,7 +19,7 @@ def eval(task, modelname):
             --dataset_name {task} \
             --response_path {response_path} \
             --output_path {output_path} \
-            --batch_size 20 --log_steps 10 --resume
+            --batch_size 20 --log_steps 1 --resume
         """
     os.system(respones)
 

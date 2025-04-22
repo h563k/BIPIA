@@ -27,7 +27,7 @@ def evaluate(task, modelname, response_path, output_path):
                 --response_path {response_path} \
                 --output_path {output_path} \
                 --gpt_config_file {gpt_config_file} \
-                --batch_size 20 --log_steps 10 --resume"""
+                --batch_size 20 --log_steps 1 --resume"""
     os.system(respones)
 
 

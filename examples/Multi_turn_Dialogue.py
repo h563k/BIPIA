@@ -30,7 +30,7 @@ def generate(task):
                 --attack_data_file {attack_data_file} \
                 --llm_config_file {llm_config_file} \
                 --output_path {output_path}  --batch_size 20 \
-                --add_ign_guidance --log_steps 10 --resume """
+                --add_ign_guidance --log_steps 1 --resume """
     os.system(respones)
 
 
