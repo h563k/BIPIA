@@ -48,6 +48,9 @@ def result_count():
                 # 直接通过list转换获取全部内容
                 file_data = [x['asr'] for x in file_data]
                 asr_rate = sum(file_data)/len(file_data)
+                if types == "border_type":
+                    ends = output_path.replace(".jsonl", "").split("_")[-1]
+                    types += "_" + ends
                 data = [modelname, task, types, output_path, asr_rate]
                 temp = pd.concat([temp, pd.DataFrame([data])], axis=0)
         output_path = output_path.split("/")[-1].replace(".jsonl", "")

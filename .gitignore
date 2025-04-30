@@ -5,7 +5,6 @@ __pycache__/
 .DS_Store
 *.egg-info/
 build/
-
 diff.sh
 config/my_gpt35.yaml
 *.yaml
