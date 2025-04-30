@@ -1,31 +1,30 @@
 # Copyright (c) Microsoft Corporation.
 # Licensed under the MIT License.
+from functools import partial
+import jsonlines
+import logging
+import json
+import numpy as np
+from tqdm import tqdm
+from pathlib import Path
+import copy
+from collections import Counter
+import torch
+from torch.utils.data import DataLoader
+import datasets
+from datasets import Dataset
+from accelerate import Accelerator
+from accelerate.logging import get_logger
+from accelerate.utils import set_seed
+from bipia.model import AutoLLM
+from bipia.data import AutoPIABuilder, DefaultDataCollator, DataCollatorWithPadding
+from bipia.metrics import BipiaEvalFactory
+from parameters import parse_args
 import os
 import sys
 file_path = os.path.dirname(__file__)
 home_path = os.path.dirname(file_path)
 sys.path.append(home_path)
-
-from parameters import parse_args
-from bipia.metrics import BipiaEvalFactory
-from bipia.data import AutoPIABuilder, DefaultDataCollator, DataCollatorWithPadding
-from bipia.model import AutoLLM
-from accelerate.utils import set_seed
-from accelerate.logging import get_logger
-from accelerate import Accelerator
-from datasets import Dataset
-import datasets
-from torch.utils.data import DataLoader
-import torch
-from collections import Counter
-import copy
-from pathlib import Path
-from tqdm import tqdm
-import numpy as np
-import json
-import logging
-import jsonlines
-from functools import partial
 
 
 logger = get_logger(__name__)
@@ -113,7 +112,8 @@ def inference(args):
     if args.seed is not None:
         set_seed(args.seed)
     if args.prompt_type:
-        pia_builder = AutoPIABuilder.from_name(args.dataset_name)(args.seed, args.prompt_type)
+        pia_builder = AutoPIABuilder.from_name(
+            args.dataset_name)(args.seed, args.prompt_type)
     else:
         pia_builder = AutoPIABuilder.from_name(args.dataset_name)(args.seed)
     pia_samples = pia_builder(
@@ -122,7 +122,7 @@ def inference(args):
         enable_stealth=args.enable_stealth,
     )
     pia_dataset = Dataset.from_pandas(pia_samples)
-    
+
     llm = AutoLLM.from_name(args.llm_config_file)(
         config=args.llm_config_file,
         accelerator=accelerator,
@@ -135,7 +135,8 @@ def inference(args):
 
     with accelerator.main_process_first():
         # 截取部分, 量太大,而且主要是排列组合, 信息量并不大, 只需要截取部分数据即可
-        pia_dataset = pia_dataset.shuffle(seed=42).select(range(min(1000, len(pia_dataset))))
+        pia_dataset = pia_dataset.shuffle(seed=42).select(
+            range(min(1000, len(pia_dataset))))
         processed_datasets = pia_dataset.map(
             rename_target,
             desc="Processing Indirect PIA datasets (Rename target).",
@@ -426,66 +427,6 @@ def evaluate(args):
             writer.write_all(out)
 
 
-def capability_eval(args):
-    accelerator = (
-        Accelerator(log_with=args.report_to, logging_dir=args.logging_path)
-        if args.with_tracking
-        else Accelerator()
-    )
-
-    logging.basicConfig(
-        format="%(asctime)s - %(levelname)s - %(name)s - %(message)s",
-        datefmt="%m/%d/%Y %H:%M:%S",
-        level=logging.INFO,
-    )
-
-    logger.info(accelerator.state, main_process_only=False)
-    if accelerator.is_local_main_process:
-        datasets.utils.logging.set_verbosity_warning()
-    else:
-        datasets.utils.logging.set_verbosity_error()
-
-    if args.seed is not None:
-        set_seed(args.seed)
-
-    output_path = Path(args.output_path)
-    response_path = Path(args.response_path)
-
-    if not response_path.exists():
-        raise ValueError(
-            f"response_path: {args.response_path} does not exists.")
-
-    ds = datasets.load_dataset(
-        "json", data_files=args.response_path, split="train")
-
-    from rouge import RougeRecall
-
-    metric = RougeRecall()
-
-    preds = []
-    labels = []
-    for example in ds:
-        preds.append(example["response"])
-        labels.append(example["target"])
-
-    eval_metrics = metric.compute(
-        predictions=preds, references=labels, use_aggregator=False
-    )
-
-    out = []
-
-    for i, example in enumerate(ds):
-        for key in eval_metrics:
-            example[f"{key}_recall"] = eval_metrics[key][i]
-        out.append(example)
-
-    if args.output_path:
-        output_path = Path(args.output_path)
-        output_path.parent.mkdir(exist_ok=True, parents=True)
-        with jsonlines.open(args.output_path, "w") as writer:
-            writer.write_all(out)
-
-
 if __name__ == "__main__":
     args = parse_args()
 
@@ -493,7 +434,5 @@ if __name__ == "__main__":
         inference(args)
     elif args.mode == "evaluate":
         evaluate(args)
-    elif args.mode == "capability":
-        capability_eval(args)
     else:
         raise ValueError(f"Invalid mode {args.mode}")

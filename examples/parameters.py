@@ -11,8 +11,8 @@ def parse_args():
         "--mode",
         type=str,
         default="inference",
-        choices=["inference", "evaluate", "capability"],
-        help="Mode to run run.py: can be set as inference, evaluate or capability.",
+        choices=["inference", "evaluate"],
+        help="Mode to run run.py: can be set as inference, evaluate",
     )
     parser.add_argument(
         "--seed", type=int, default=None, help="Random seed for reproduction."

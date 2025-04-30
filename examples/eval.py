@@ -58,18 +58,18 @@ def get_task_list():
             response_path = os.path.join(output_generate_path, types, model)
             output_path = os.path.join(
                 home_path, "output", "eval", types, model)
-            if os.path.exists(output_path) and "rougl" not in output_path:
+            if os.path.exists(output_path):
                 with open(output_path, 'r') as f:
                     lines = f.readlines()
                     if len(lines) >= 999:
                         print(f"{output_path} has been evaluated")
                     else:
                         print(f"start eval {output_path} len: {len(lines)}")
-                        task_list.append((task, modelname, response_path, output_path))
+                        task_list.append(
+                            (task, modelname, response_path, output_path))
     return task_list
 
 
 if __name__ == "__main__":
     task_list = get_task_list()
     multi_process_template_model(task_list, 48)
-
